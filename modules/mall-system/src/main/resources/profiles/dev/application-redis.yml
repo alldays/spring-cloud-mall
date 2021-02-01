@@ -1,0 +1,6 @@
+spring:
+  redis:
+    password: smcdyanfa
+    sentinel:
+      master: mymaster
+      nodes: 10.28.33.236:26379,10.28.33.238:26379,10.28.33.179:26379

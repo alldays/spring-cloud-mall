@@ -21,6 +21,8 @@ import com.kuqi.mall.system.service.IMenuService;
 import com.kuqi.mall.system.service.IRoleMenuService;
 import com.kuqi.mall.system.service.IUserRoleService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.kuqi.mall.system.entity.constants.Constants.MENU_LOCK;
 
 /**
  * @Author iloveoverfly
@@ -44,6 +48,8 @@ public class MenuManagerImpl implements IMenuManager {
     private IUserRoleService userRoleService;
     @Autowired
     private IRoleMenuService roleMenuService;
+    @Autowired
+    private RedissonClient redissonClient;
 
     @Override
     public List<MenuVo> list(MenuListQuery menuListQuery) {
@@ -80,12 +86,21 @@ public class MenuManagerImpl implements IMenuManager {
     @Transactional(rollbackFor = Exception.class)
     public MenuVo save(SaveMenuDto saveMenuDto) {
 
-        Menu addingMenu = MenuConverter.INSTANCE.fromSaveMenuDto(saveMenuDto);
-        addingMenu.setVisible(MenuVisible.show.getValue());
-        addingMenu.setStatus(MenuStatus.normal.getValue());
-        menuService.save(addingMenu);
-        Menu menu = menuService.getById(addingMenu.getId());
-        return MenuConverter.INSTANCE.toMenuVo(menu);
+        LoginUser loginUser = LoginUserUtils.getLoginUser();
+        String lockKey = MENU_LOCK + loginUser.getUserName();
+        RLock lock = redissonClient.getLock(lockKey);
+        lock.lock();
+        try {
+
+            Menu addingMenu = MenuConverter.INSTANCE.fromSaveMenuDto(saveMenuDto);
+            addingMenu.setVisible(MenuVisible.show.getValue());
+            addingMenu.setStatus(MenuStatus.normal.getValue());
+            menuService.save(addingMenu);
+            Menu menu = menuService.getById(addingMenu.getId());
+            return MenuConverter.INSTANCE.toMenuVo(menu);
+        } finally {
+            lock.unlock();
+        }
     }
 
     @Override
