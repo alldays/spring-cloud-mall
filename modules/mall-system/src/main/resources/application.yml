@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: dev
+  application:
+    name: mall-system
+swagger:
+  basePackage: com.kuqi.mall.system
+security:
+  oauth2:
+    resource:
+      id: ${spring.application.name}
+server:
+  port: 9908
+  tomcat:
+    uri-encoding: UTF-8
+  servlet:
+    context-path: /system

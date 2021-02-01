@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.kuqi.maill.common.core.utils.SpringContextHolder,\
+com.kuqi.maill.common.core.lock.OptimisticRetryAOP

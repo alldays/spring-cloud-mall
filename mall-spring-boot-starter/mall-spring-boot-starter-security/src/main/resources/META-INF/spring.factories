@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.kuqi.mall.security.config.JwtTokenConfig,\
+com.kuqi.mall.security.core.aop.VerifyLoginUserAOP,\
+com.kuqi.mall.security.config.ResourceServerConfig

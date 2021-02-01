@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.kuqi.mall</groupId>
+        <artifactId>spring-cloud-mall</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>mall-dependencies</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>项目的所有依赖的版本</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
+        <spring-cloud-alibaba.version>2.2.3.RELEASE</spring-cloud-alibaba.version>
+        <mybatis.version>2.1.1</mybatis.version>
+        <druid-spring-boot.version>1.1.21</druid-spring-boot.version>
+        <pagehelper.version>5.1.11</pagehelper.version>
+        <springfox-swagger2.version>3.0.0</springfox-swagger2.version>
+        <swagger-models.version>1.5.21</swagger-models.version>
+        <swagger-annotations.version>1.5.21</swagger-annotations.version>
+        <commons-collections4.version>4.2</commons-collections4.version>
+        <fastjson.version>1.2.60</fastjson.version>
+        <hutool.all.version>5.5.7</hutool.all.version>
+        <guava.version>28.2-jre</guava.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
+        <springloaded.version>1.2.8.RELEASE</springloaded.version>
+        <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+        <oauth2.version>2.2.4.RELEASE</oauth2.version>
+        <HikariCP.version>4.0.0</HikariCP.version>
+        <mybatis-plus-boot-starter.version>3.4.2</mybatis-plus-boot-starter.version>
+        <dynamic-datasource.version>3.3.1</dynamic-datasource.version>
+        <hutool-all.version>5.5.7</hutool-all.version>
+        <commons-lang3.version>3.9</commons-lang3.version>
+        <apache.commons.collections4.version>4.1</apache.commons.collections4.version>
+        <commons-codec.version>1.14</commons-codec.version>
+        <alibaba.fastjson.version>1.2.60</alibaba.fastjson.version>
+        <redisson.version>3.4.1</redisson.version>
+        <mapstruct.version>1.4.1.Final</mapstruct.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <springfox.swagger2.version>2.9.2</springfox.swagger2.version>
+        <springfox.swagger2.models.version>1.5.21</springfox.swagger2.models.version>
+        <swagger-bootstrap-ui.version>1.9.6</swagger-bootstrap-ui.version>
+    </properties>
+
+    <!-- 版本依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- 引入spring-cloud 依赖配置 -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- SpringCloud Alibaba 微服务 -->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Spring Boot dependencies end -->
+    </dependencies>
+
+    <!-- 配置属性 -->
+    <profiles>
+        <profile>
+            <!-- 生产环境 -->
+            <id>prod</id>
+            <properties>
+                <active.environment>prod</active.environment>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 本地开发环境 -->
+            <id>dev</id>
+            <activation>
+                <!-- 默认dev生效 -->
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <active.environment>dev</active.environment>
+            </properties>
+        </profile>
+        <profile>
+            <!-- 测试环境 -->
+            <id>test</id>
+            <properties>
+                <active.environment>test</active.environment>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- 复制资源文件插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <configuration>
+                        <attach>true</attach>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!-- 代码编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- 执行测试用例插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- 忽略测试 -->
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <!-- 构建项目war插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+            <!-- maven-resources-plugin 将项目主资源文件和测试文件复制到对应的目录 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <encoding>utf-8</encoding>
+                </configuration>
+            </plugin>
+        </plugins>
+        <!-- filtering=true 该插件能够解析资源文件中的maven属性-->
+        <resources>
+            <resource>
+                <directory>src/main/resources/profiles/${active.environment}</directory>
+                <filtering>true</filtering>
+            </resource>
+            <!-- 解决Cannot load keys from store: class path resource -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.jks</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>**/*.jks</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+</project>
