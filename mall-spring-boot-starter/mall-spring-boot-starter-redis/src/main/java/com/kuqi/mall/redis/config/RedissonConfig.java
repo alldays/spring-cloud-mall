@@ -11,7 +11,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.List;
+import java.util.Objects;
 
 /**
  * redisson 哨兵模式客户端配置
@@ -34,15 +34,30 @@ public class RedissonConfig {
     public org.redisson.api.RedissonClient redissonClient() {
 
         Config config = new Config();
-        List<String> nodes = this.redisProperties.getSentinel().getNodes();
 
-        SentinelServersConfig serverConfig = config.useSentinelServers()
-                .addSentinelAddress(nodes.toArray(new String[0]))
-                .setPassword(this.redisProperties.getPassword())
-                .setMasterName(this.redisProperties.getSentinel().getMaster())
-                .setReadMode(ReadMode.SLAVE);
+        RedisProperties.Sentinel sentinel;
+        RedisProperties.Cluster cluster;
+        // 哨兵模式
+        if (Objects.nonNull(sentinel = this.redisProperties.getSentinel())) {
 
-        serverConfig.setDatabase(redisProperties.getDatabase());
+            SentinelServersConfig serverConfig = config.useSentinelServers()
+                    .addSentinelAddress(sentinel.getNodes().toArray(new String[0]))
+                    .setPassword(this.redisProperties.getPassword())
+                    .setMasterName(sentinel.getMaster())
+                    .setReadMode(ReadMode.SLAVE);
+            serverConfig.setDatabase(redisProperties.getDatabase());
+        }
+        // 集群模式
+        else if (Objects.nonNull(cluster = this.redisProperties.getCluster())) {
+
+            config.useClusterServers().addNodeAddress(cluster.getNodes().toArray(new String[0]));
+        }
+        // 单机模式
+        else {
+
+            String address = this.redisProperties.getHost() + ":" + this.redisProperties.getPort();
+            config.useSingleServer().setAddress(address);
+        }
         return Redisson.create(config);
     }
 }

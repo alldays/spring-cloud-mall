@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: 4d4f1cb8-bad7-46be-b3b7-3ae1d6c71383
+        enabled: true
+      config:
+        server-addr: localhost:8848
+        namespace: 4d4f1cb8-bad7-46be-b3b7-3ae1d6c71383
+        name: application.properties
+        group: GATEWAY_GROUP
+        refresh-enabled: true

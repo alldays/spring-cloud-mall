@@ -83,35 +83,6 @@
         <!-- Spring Boot dependencies end -->
     </dependencies>
 
-    <!-- 配置属性 -->
-    <profiles>
-        <profile>
-            <!-- 生产环境 -->
-            <id>prod</id>
-            <properties>
-                <active.environment>prod</active.environment>
-            </properties>
-        </profile>
-        <profile>
-            <!-- 本地开发环境 -->
-            <id>dev</id>
-            <activation>
-                <!-- 默认dev生效 -->
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <active.environment>dev</active.environment>
-            </properties>
-        </profile>
-        <profile>
-            <!-- 测试环境 -->
-            <id>test</id>
-            <properties>
-                <active.environment>test</active.environment>
-            </properties>
-        </profile>
-    </profiles>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -172,10 +143,6 @@
         </plugins>
         <!-- filtering=true 该插件能够解析资源文件中的maven属性-->
         <resources>
-            <resource>
-                <directory>src/main/resources/profiles/${active.environment}</directory>
-                <filtering>true</filtering>
-            </resource>
             <!-- 解决Cannot load keys from store: class path resource -->
             <resource>
                 <directory>src/main/resources</directory>

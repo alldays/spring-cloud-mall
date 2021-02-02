@@ -1,7 +1,7 @@
 spring:
-   profiles: 
+   profiles:
      include: datasource,dubbo,mybatis,redis,rocketMQ,sms,post,http
-server: 
+server:
     port: 9908
-    tomcat: 
+    tomcat:
       uri-encoding: UTF-8

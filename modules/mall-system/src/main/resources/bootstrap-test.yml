@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: 4d4f1cb8-bad7-46be-b3b7-3ae1d6c71383
+        enabled: true
+      config:
+        server-addr: localhost:8848
+        namespace: 4d4f1cb8-bad7-46be-b3b7-3ae1d6c71383
+        name: application.properties
+        group: MALL_SYSTEM
+        refresh-enabled: true
+        extension-configs[0].data-id: redis.properties
+        extension-configs[0].refresh: true
+        extension-configs[1].data-id: mybatis-plus.properties
+        extension-configs[1].refresh: true

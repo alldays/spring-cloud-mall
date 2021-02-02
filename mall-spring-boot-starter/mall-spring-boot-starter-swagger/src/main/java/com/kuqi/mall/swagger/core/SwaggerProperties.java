@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @Date 2021/1/26 22:40
  **/
 @Data
-@ConfigurationProperties("swagger")
+@ConfigurationProperties(prefix = "swagger")
 public class SwaggerProperties {
 
     private String title;
