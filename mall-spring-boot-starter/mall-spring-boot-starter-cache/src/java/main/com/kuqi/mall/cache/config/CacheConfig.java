@@ -45,6 +45,7 @@ public class CacheConfig {
 
         // redis 缓存配置
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
+                // 默认缓存失效时间
                 .entryTtl(Duration.ofHours(1))
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(RedisSerializer.string()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(redisFastJsonSerializer));

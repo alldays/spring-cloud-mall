@@ -8,4 +8,6 @@ public interface Constants {
 
     String LOCK_PRE = "lock:";
     String MENU_LOCK = LOCK_PRE + "menu:save:";
+
+    String USER_ID_CAHCE = "user:id";
 }

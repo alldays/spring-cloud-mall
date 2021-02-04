@@ -21,4 +21,6 @@ public interface IUserManager extends UserDetailsService {
     UserVo resetPwd(ResetUserPwdDto resetUserPwdDto);
 
     Boolean delete(Long id);
+
+    UserVo getById(Long id);
 }

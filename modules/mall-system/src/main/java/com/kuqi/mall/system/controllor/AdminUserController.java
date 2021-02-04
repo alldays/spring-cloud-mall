@@ -61,6 +61,14 @@ public class AdminUserController {
         return Response.success(userManager.resetPwd(resetUserPwdDto));
     }
 
+    @PreAuthorize("hasAnyAuthority('user:list:admin','admin')")
+    @ApiOperation(value = "查询用户")
+    @GetMapping("/admin/user/{id}")
+    @VerifyLoginUser(type = IS_ADMIN, errorMsg = INVALID_ADMIN_TYPE)
+    public Response<UserVo> getById(@PathVariable("id") Long id) {
+        return Response.success(userManager.getById(id));
+    }
+
     @PreAuthorize("hasAnyAuthority('user:reset-pwd','admin')")
     @ApiOperation(value = "删除用户")
     @DeleteMapping("/admin/user/{id}")

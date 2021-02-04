@@ -19,6 +19,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 /**
  * @Author iloveoverfly
  * @Date 2021/1/27 21:55
@@ -28,6 +30,21 @@ import org.springframework.test.context.junit4.SpringRunner;
 @Slf4j
 @AutoConfigureMockMvc
 public class AdminMenuControllerTest extends BaseTest {
+
+
+    /**
+     * 成功查询菜单
+     */
+    @Test
+    public void success2listMenu() throws Exception {
+
+
+        Response<List<MenuVo>> response = super.listMenu(null);
+        List<MenuVo> list;
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(list = response.getData());
+
+    }
 
     /**
      * 成功新增菜单

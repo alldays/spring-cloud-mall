@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.kuqi.maill.common.core.constant.GlobalConstant;
 import com.kuqi.mall.system.entity.dto.*;
+import com.kuqi.mall.system.entity.query.MenuListQuery;
 import com.kuqi.mall.system.entity.vo.MenuVo;
 import com.kuqi.mall.system.entity.vo.RoleVo;
 import com.kuqi.mall.system.entity.vo.UserVo;
@@ -20,6 +21,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.Filter;
+import java.util.List;
 
 /**
  * @Author iloveoverfly
@@ -29,6 +31,9 @@ public class BaseTest {
 
 
     protected static final TypeReference<Response<MenuVo>> menuVoTypeReference = new TypeReference<Response<MenuVo>>() {
+    };
+
+    protected static final TypeReference<Response<List<MenuVo>>> menuVoListTypeReference = new TypeReference<Response<List<MenuVo>>>() {
     };
 
     protected static final TypeReference<Response<Boolean>> booleanTypeReference = new TypeReference<Response<Boolean>>() {
@@ -55,6 +60,23 @@ public class BaseTest {
     @Before
     public void before() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).addFilter(springSecurityFilterChain).build();
+    }
+
+    /**
+     * 查询菜单
+     */
+    protected Response<List<MenuVo>> listMenu(MenuListQuery menuListQuery) throws Exception {
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/admin/menu")
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .content(JSON.toJSONString(menuListQuery))
+                .accept(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .header(GlobalConstant.AUTHORIZATION_HEADER, GlobalConstant.ADMIN_TOKEN))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+        return JSON.parseObject(mvcResult.getResponse().getContentAsString(), menuVoListTypeReference);
     }
 
     /**
@@ -153,6 +175,21 @@ public class BaseTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
         return JSON.parseObject(mvcResult.getResponse().getContentAsString(), booleanTypeReference);
+    }
+
+    /**
+     * 保存用户
+     */
+    protected Response<UserVo> getAdminUser(Long id) throws Exception {
+
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders
+                .get("/admin/user/" + id)
+                .header(GlobalConstant.AUTHORIZATION_HEADER, GlobalConstant.ADMIN_TOKEN)
+                .accept(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andReturn();
+        return JSON.parseObject(mvcResult.getResponse().getContentAsString(), userVoTypeReference);
     }
 
     /**

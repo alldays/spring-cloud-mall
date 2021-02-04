@@ -26,19 +26,4 @@ public interface RedisConfig {
      * 失效时间随机器
      */
     Random EXPIRE_RANDOM = new Random();
-
-    /**
-     * 默认锁时间限制
-     */
-    long DEFAULT_LOCK_EXPIRED_TIME = 300000L;
-
-    /**
-     * 默认尝试获取锁的时间
-     */
-    long DEFAULT_TRY_LOCK_TIMEOUT = 1000L;
-
-    /**
-     * 默认的数据缓存失效时间  // 24小时，单位为
-     */
-    long DEFAULT_CACHED_TIME_OUT = 24L;
 }

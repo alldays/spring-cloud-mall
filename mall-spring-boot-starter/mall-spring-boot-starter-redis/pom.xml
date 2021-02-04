@@ -37,6 +37,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
@@ -50,6 +51,10 @@
             <artifactId>redisson</artifactId>
             <version>${redisson.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-data-24</artifactId>
+            <version>${redisson.version}</version>
+        </dependency>
     </dependencies>
 </project>

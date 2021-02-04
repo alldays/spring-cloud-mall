@@ -38,6 +38,19 @@ public class AdminUserControllerTest extends BaseTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
+    public void success2getAdminUser() throws Exception {
+
+        Long userId = 1355025873780269057l;
+
+        UserVo userVo;
+        Response<UserVo> userResponse = this.getAdminUser(userId);
+        Assert.assertNotNull(userVo = userResponse.getData());
+
+        userResponse = this.getAdminUser(userId);
+        Assert.assertNotNull(userVo = userResponse.getData());
+    }
+
+    @Test
     public void success2saveAdminUser() throws Exception {
 
         SaveRoleDto saveRoleDto = new SaveRoleDto();

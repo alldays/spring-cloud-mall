@@ -23,6 +23,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -35,6 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.kuqi.mall.system.entity.constants.Constants.USER_ID_CAHCE;
 import static com.kuqi.mall.system.entity.constants.ExceptionConstant.USER_NEW_PWD_IS_EXIST;
 
 /**
@@ -85,6 +88,7 @@ public class UserManagerImpl implements IUserManager {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OptimisticRetry
+    @CacheEvict(beforeInvocation = true, value = USER_ID_CAHCE, key = "#updateUserDto.id")
     public UserVo update(UpdateUserDto updateUserDto) {
 
         User updatingUser = UserConverter.INSTANCE.fromUpdateUserDto(updateUserDto);
@@ -130,6 +134,7 @@ public class UserManagerImpl implements IUserManager {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OptimisticRetry
+    @CacheEvict(beforeInvocation = true, value = USER_ID_CAHCE, key = "#resetUserPwdDto.id")
     public UserVo resetPwd(ResetUserPwdDto resetUserPwdDto) {
 
         Long userId = resetUserPwdDto.getId();
@@ -151,6 +156,7 @@ public class UserManagerImpl implements IUserManager {
     @Override
     @Transactional(rollbackFor = Exception.class)
     @OptimisticRetry
+    @CacheEvict(beforeInvocation = true, value = USER_ID_CAHCE)
     public Boolean delete(Long id) {
 
         if (Objects.isNull(id)
@@ -161,6 +167,12 @@ public class UserManagerImpl implements IUserManager {
             throw new OptimisticLockingFailureException("删除用户失败！");
         }
         return true;
+    }
+
+    @Override
+    @Cacheable(value = USER_ID_CAHCE)
+    public UserVo getById(Long id) {
+        return this.getUserVo(id);
     }
 
     @Override

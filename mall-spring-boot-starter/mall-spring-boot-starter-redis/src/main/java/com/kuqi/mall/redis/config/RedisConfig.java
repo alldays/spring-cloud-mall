@@ -1,14 +1,15 @@
 package com.kuqi.mall.redis.config;
 
 import com.alibaba.fastjson.support.spring.GenericFastJsonRedisSerializer;
-import io.lettuce.core.ReadFrom;
-import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.config.Config;
+import org.redisson.config.ReadMode;
+import org.redisson.config.SentinelServersConfig;
+import org.redisson.spring.data.connection.RedissonConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,17 +17,24 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.serializer.RedisSerializer;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 /**
- * redis 自定义配置，开启spring cache缓存
+ * 使用redisson配置
  *
  * @Author iloveoverfly
- * @Date 2020/8/26 17:58
+ * @Date 2021/1/26 22:22
  **/
 @Configuration
-@Slf4j
-@AutoConfigureBefore(RedisAutoConfiguration.class)
-@EnableCaching
+@EnableConfigurationProperties({RedisProperties.class})
 public class RedisConfig {
+
+    private final static String SSL_REDIS = "redis://";
+
+    @Autowired
+    private RedisProperties redisProperties;
 
     /**
      * redis FastJson序列化
@@ -39,18 +47,10 @@ public class RedisConfig {
 
     @Bean
     public StringRedisTemplate stringRedisTemplate(@Autowired RedisConnectionFactory redisConnectionFactory) {
+
         StringRedisTemplate template = new StringRedisTemplate();
         template.setConnectionFactory(redisConnectionFactory);
         return template;
-    }
-
-    /**
-     * 配置从库读取策略
-     * 先从从库查询数据，如果失败则从master获取
-     */
-    @Bean
-    public LettuceClientConfigurationBuilderCustomizer lettuceClientConfigurationBuilderCustomizer() {
-        return clientConfigurationBuilder -> clientConfigurationBuilder.readFrom(ReadFrom.REPLICA_PREFERRED);
     }
 
     /**
@@ -74,5 +74,52 @@ public class RedisConfig {
         template.setHashKeySerializer(stringRedisSerializer);
         template.setKeySerializer(stringRedisSerializer);
         return template;
+    }
+
+    /**
+     * 使用RedissonConnectionFactory
+     */
+    @Bean
+    public RedissonConnectionFactory redissonConnectionFactory() {
+        return new RedissonConnectionFactory(redissonClient());
+    }
+
+    /**
+     * redisson 客户端配置
+     */
+    @Bean(destroyMethod = "shutdown")
+    @ConditionalOnMissingBean({RedisProperties.class})
+    public org.redisson.api.RedissonClient redissonClient() {
+
+        Config config = new Config();
+
+        RedisProperties.Sentinel sentinel;
+        RedisProperties.Cluster cluster;
+        // 哨兵模式
+        if (Objects.nonNull(sentinel = this.redisProperties.getSentinel())) {
+
+            List<String> newNodes = sentinel.getNodes()
+                    .stream().map((index) -> index.startsWith(SSL_REDIS) ? index : SSL_REDIS + index)
+                    .collect(Collectors.toList());
+
+            SentinelServersConfig serverConfig = config.useSentinelServers()
+                    .addSentinelAddress(newNodes.toArray(new String[0]))
+                    .setPassword(this.redisProperties.getPassword())
+                    .setMasterName(sentinel.getMaster())
+                    .setReadMode(ReadMode.SLAVE);
+            serverConfig.setDatabase(redisProperties.getDatabase());
+        }
+        // 集群模式
+        else if (Objects.nonNull(cluster = this.redisProperties.getCluster())) {
+
+            config.useClusterServers().addNodeAddress(cluster.getNodes().toArray(new String[0]));
+        }
+        // 单机模式
+        else {
+
+            String address = this.redisProperties.getHost() + ":" + this.redisProperties.getPort();
+            config.useSingleServer().setAddress(address);
+        }
+        return Redisson.create(config);
     }
 }
